@@ -1,0 +1,128 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://main.gd" id="1"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+horizontal_scroll_mode = 0
+
+[node name="VBox" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+
+[node name="GridDisplay" type="GridContainer" parent="ScrollContainer/VBox"]
+layout_mode = 2
+columns = 5
+
+[node name="StatsLabel" type="Label" parent="ScrollContainer/VBox"]
+layout_mode = 2
+text = "Loading..."
+
+[node name="RestartButton" type="Button" parent="ScrollContainer/VBox"]
+layout_mode = 2
+text = "Restart"
+
+[node name="SkillsLabel" type="Label" parent="ScrollContainer/VBox"]
+layout_mode = 2
+text = "Loading..."
+autowrap_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="UpButton" type="Button" parent="ScrollContainer/VBox/Buttons"]
+layout_mode = 2
+text = "Up"
+
+[node name="DownButton" type="Button" parent="ScrollContainer/VBox/Buttons"]
+layout_mode = 2
+text = "Down"
+
+[node name="LeftButton" type="Button" parent="ScrollContainer/VBox/Buttons"]
+layout_mode = 2
+text = "Left"
+
+[node name="RightButton" type="Button" parent="ScrollContainer/VBox/Buttons"]
+layout_mode = 2
+text = "Right"
+
+[node name="AttackButton" type="Button" parent="ScrollContainer/VBox/Buttons"]
+layout_mode = 2
+text = "Attack"
+
+[node name="DashButtons" type="HBoxContainer" parent="ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="DashUpButton" type="Button" parent="ScrollContainer/VBox/DashButtons"]
+layout_mode = 2
+text = "Dash Up"
+
+[node name="DashDownButton" type="Button" parent="ScrollContainer/VBox/DashButtons"]
+layout_mode = 2
+text = "Dash Down"
+
+[node name="DashLeftButton" type="Button" parent="ScrollContainer/VBox/DashButtons"]
+layout_mode = 2
+text = "Dash Left"
+
+[node name="DashRightButton" type="Button" parent="ScrollContainer/VBox/DashButtons"]
+layout_mode = 2
+text = "Dash Right"
+
+[node name="AbilityButtons" type="HBoxContainer" parent="ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="PowerStrikeButton" type="Button" parent="ScrollContainer/VBox/AbilityButtons"]
+layout_mode = 2
+text = "Power Strike"
+
+[node name="ChargingStrikeButton" type="Button" parent="ScrollContainer/VBox/AbilityButtons"]
+layout_mode = 2
+text = "Charging Strike"
+
+[node name="SupportButtons" type="HBoxContainer" parent="ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="HealButton" type="Button" parent="ScrollContainer/VBox/SupportButtons"]
+layout_mode = 2
+text = "Heal Self"
+
+[node name="ReviveButton" type="Button" parent="ScrollContainer/VBox/SupportButtons"]
+layout_mode = 2
+text = "Revive Enemy"
+
+[node name="LogDisplay" type="RichTextLabel" parent="ScrollContainer/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(400, 200)
+size_flags_vertical = 3
+scroll_following = true
+
+[node name="DebugSeparator" type="HSeparator" parent="ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="DebugLabel" type="Label" parent="ScrollContainer/VBox"]
+layout_mode = 2
+text = "Debug: Grant Skill XP"
+
+[node name="DebugButtons" type="HBoxContainer" parent="ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="DebugStatsLabel" type="Label" parent="ScrollContainer/VBox"]
+layout_mode = 2
+text = "Debug: Adjust Stats"
+
+[node name="DebugStatButtons" type="HBoxContainer" parent="ScrollContainer/VBox"]
+layout_mode = 2

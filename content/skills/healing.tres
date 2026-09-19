@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SkillDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/skills/skill_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "healing"
+display_name = "Healing"
+description = "The art of mending wounds, your own or others'. Weak and unreliable at first - grows through use."
+xp_per_level = 100
+max_level = 10

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/abilities/ability_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "heal"
+display_name = "Heal"
+description = "Mend wounds, restoring lost HP. Weak at first - deliberately weaker than a basic attack until your Healing skill catches up. Does nothing for someone already at 0 HP - see Revive for that."
+requirements = {}
+effects = [{"type": "heal", "base_amount": 2, "per_level": 4}]
+trains = {"healing": 10}

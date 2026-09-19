@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/abilities/ability_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "dash"
+display_name = "Dash"
+description = "A burst of speed - distance scales with your Athletics level, starting no better than a plain step until trained."
+requirements = {"athletics": 1}
+effects = [{"type": "dash", "base_distance": 1, "per_level": 1}]

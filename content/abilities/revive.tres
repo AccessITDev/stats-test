@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/abilities/ability_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "revive"
+display_name = "Revive"
+description = "Brings a fallen target back with a small amount of HP. Does nothing for a target that's still alive - see Heal for that."
+requirements = {}
+effects = [{"type": "revive", "hp": 5}]
+trains = {}
