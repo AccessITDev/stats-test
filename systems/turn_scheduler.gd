@@ -6,9 +6,17 @@ extends Node
 ## an entity gets (pillar #8's eventual goal) is a separate, bigger step
 ## on top of this, not done here.
 ##
-## Registered as the autoload singleton "TurnScheduler" (see project.godot).
-## Deliberately has no class_name, same reason as EntityRegistry: Redot
-## doesn't allow a class_name and an autoload of the same name together.
+## Also owns the elapsed in-fiction time tracker from
+## TECHNICAL_DESIGN.md §9 (TIME_COSTS / get_elapsed_seconds /
+## reset_elapsed_time, below). Living here rather than a separate
+## autoload because turns are exactly what the clock measures; nothing
+## outside this file reads the total yet, on purpose - see those
+## functions' comments.
+##
+## Registered as the autoload singleton "TurnScheduler" (see
+## project.godot). Deliberately has no class_name, same reason as
+## EntityRegistry: Redot doesn't allow a class_name and an autoload of
+## the same name together.
 
 ## Fired whenever an entity's turn is skipped (recovering or dead), so it
 ## can be telegraphed to the player instead of silently vanishing. This
@@ -16,8 +24,76 @@ extends Node
 ## see DESIGN_PILLARS.md's note on telegraphing.
 signal turn_skipped(event: GameEvent)
 
+## Seconds of in-fiction time charged per ActionResolver.action_resolved
+## event type - the concrete numbers behind TECHNICAL_DESIGN.md §9's
+## "each turn costs 1-3 seconds depending on the action." Move and
+## Attack match that doc's already-committed "moving and most
+## tactical-grid actions cost 1 second." Abilities don't have a
+## committed cost there yet - 2 seconds here is a reasoned placeholder
+## (inside the documented range, and distinct from the baseline so the
+## counter actually proves it can vary by type), not a locked decision.
+##
+## Flat per event_type, not per-ability - one real consequence worth
+## naming: Dash/Charging Strike call ActionResolver.resolve_move()
+## internally per cell (see EffectLibrary._dash's comment), so each cell
+## already adds its own "moved" second on top of the ability's own
+## "ability_used" cost - a 4-cell Dash costs 4 + 2 = 6 seconds this way,
+## not a flat 2. Not treated as a bug: unlike the identically-shaped
+## athletics-XP double-count question the same code already avoids via
+## an empty `trains`, charging for real distance covered seems like the
+## right call for a time budget, not a wrong one - but naming it here as
+## a real decision, not an oversight.
+const TIME_COSTS: Dictionary = {
+	"moved": 1,
+	"attack_hit": 1,
+	"attack_defeated": 1,
+	"ability_used": 2,
+}
+
 var _turn_order: Array[int] = []
 var _current_index: int = -1
+
+## Total in-fiction seconds elapsed from resolved actions since the last
+## reset_elapsed_time() call. Deliberately wired to nothing yet - no
+## generation length, no game-over, no consequence at all. This is the
+## smallest possible slice of TECHNICAL_DESIGN.md §9: prove the clock
+## itself accumulates correctly through real play before anything is
+## allowed to depend on it.
+var _elapsed_seconds: int = 0
+
+
+## Connects to ActionResolver so every resolved action is charged
+## automatically - same "signals over direct references" convention as
+## ProgressionSystem's identical connection to the same signal (see
+## CLAUDE.md's Coding Conventions). Also the first place in the project
+## where one autoload's _ready() depends on another autoload already
+## existing: Redot instantiates autoloads in project.godot's listed
+## order and calls each one's _ready() before the next is even created,
+## so this only works because ActionResolver was moved ahead of
+## TurnScheduler in that list specifically for this change (see
+## project.godot and CLAUDE.md's Working Process). ProgressionSystem
+## could already assume that ordering safely; TurnScheduler couldn't,
+## until now.
+func _ready() -> void:
+	ActionResolver.action_resolved.connect(_on_action_resolved)
+
+
+func _on_action_resolved(event: GameEvent) -> void:
+	_elapsed_seconds += TIME_COSTS.get(event.event_type, 0)
+
+
+func get_elapsed_seconds() -> int:
+	return _elapsed_seconds
+
+
+## Zeroes the clock. Deliberately not folded into start_round(): that's
+## called every time the turn order wraps (continuously during ordinary
+## play, once per lap through all turn-takers), not just when a new game
+## actually begins - tying the reset to it would silently zero the clock
+## every round instead of only on a real restart. main.gd's restart flow
+## calls this explicitly, alongside EntityRegistry.clear_all().
+func reset_elapsed_time() -> void:
+	_elapsed_seconds = 0
 
 
 ## Builds a fresh turn order from every entity currently holding a

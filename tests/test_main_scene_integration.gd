@@ -139,12 +139,14 @@ func _ready() -> void:
 	assert(main_instance.game_over, "game_over should now be true")
 	assert(attack_button.disabled, "Attack should be disabled once the game is truly over")
 	assert(log_display.get_parsed_text().contains("You have fallen"), "Log should show the player-death message: %s" % log_display.get_parsed_text())
+	assert(TurnScheduler.get_elapsed_seconds() > 0, "Sanity check: real actions before restart should have accumulated some elapsed time")
 
 	# --- Restart: full reset, regardless of game_over ---
 	var old_player_id: int = main_instance.player_id
 	restart_button.pressed.emit()
 	await get_tree().process_frame
 	assert(not main_instance.game_over, "game_over should be false after restart")
+	assert(TurnScheduler.get_elapsed_seconds() == 0, "Restart should reset the elapsed time clock, not just game state")
 	assert(main_instance.player_id != old_player_id, "Restart should create a fresh player entity, not reuse the old id")
 	assert(not attack_button.disabled, "Buttons should be re-enabled after restart")
 	assert(log_display.get_parsed_text() == "", "Log should be cleared on restart")

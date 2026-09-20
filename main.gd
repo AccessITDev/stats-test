@@ -114,6 +114,7 @@ func _spawn_entities() -> void:
 ## testing reset are the same action here.
 func _restart_game() -> void:
 	EntityRegistry.clear_all()
+	TurnScheduler.reset_elapsed_time()
 	log_display.clear()
 	game_over = false
 	up_button.disabled = false
@@ -375,10 +376,11 @@ func _refresh_display() -> void:
 
 	var turn_label: String = "Game over" if game_over else ("Your turn" if TurnScheduler.get_active_entity() == player_id else "Enemy turn")
 	var player_turn_taker: TurnTakerComponent = EntityRegistry.get_component(player_id, "TurnTakerComponent")
-	stats_label.text = "Player HP: %d/%d (Power %d, Speed %d)    Enemy HP: %d/%d    [%s]" % [
+	stats_label.text = "Player HP: %d/%d (Power %d, Speed %d)    Enemy HP: %d/%d    [%s]    Time: %ds" % [
 		player_stats.current_hp, player_stats.max_hp, player_stats.power, player_turn_taker.speed,
 		enemy_stats.current_hp, enemy_stats.max_hp,
 		turn_label,
+		TurnScheduler.get_elapsed_seconds(),
 	]
 	skills_label.text = _build_skills_label_text(player_id)
 

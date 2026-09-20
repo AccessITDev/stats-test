@@ -17,9 +17,9 @@ config/features=PackedStringArray("26.2", "Redot")
 [autoload]
 
 EntityRegistry="*res://systems/entity_registry.gd"
-TurnScheduler="*res://systems/turn_scheduler.gd"
 Grid="*res://systems/grid.gd"
 ActionResolver="*res://systems/action_resolver.gd"
+TurnScheduler="*res://systems/turn_scheduler.gd"
 AIController="*res://systems/ai_controller.gd"
 SkillRegistry="*res://systems/skill_registry.gd"
 ProgressionSystem="*res://systems/progression_system.gd"
