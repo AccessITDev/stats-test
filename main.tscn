@@ -104,6 +104,13 @@ text = "Heal Self"
 layout_mode = 2
 text = "Revive Enemy"
 
+[node name="PatienceButtons" type="HBoxContainer" parent="ScrollContainer/VBox"]
+layout_mode = 2
+
+[node name="WaitButton" type="Button" parent="ScrollContainer/VBox/PatienceButtons"]
+layout_mode = 2
+text = "Wait"
+
 [node name="LogDisplay" type="RichTextLabel" parent="ScrollContainer/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(400, 200)

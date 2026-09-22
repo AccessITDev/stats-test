@@ -10,11 +10,12 @@ func _init() -> void:
 	var registry = load("res://systems/skill_registry.gd").new()
 	registry.load_all_definitions()
 
-	# --- Auto-discovery found both test skills ---
+	# --- Auto-discovery found all four skill files ---
 	assert(registry.has_definition("melee_combat"), "melee_combat.tres should have been auto-discovered")
 	assert(registry.has_definition("athletics"), "athletics.tres should have been auto-discovered")
+	assert(registry.has_definition("patience"), "patience.tres should have been auto-discovered")
 	assert(not registry.has_definition("nonexistent_skill"), "A skill that doesn't exist should not be found")
-	assert(registry.get_all_ids().size() == 3, "Exactly 3 skills should be loaded, got %d" % registry.get_all_ids().size())
+	assert(registry.get_all_ids().size() == 4, "Exactly 4 skills should be loaded, got %d" % registry.get_all_ids().size())
 
 	# --- Loaded definitions have the right data ---
 	var melee: SkillDefinition = registry.get_definition("melee_combat")

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/abilities/ability_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "wait"
+display_name = "Wait"
+description = "Pass the turn on purpose. Does nothing mechanically yet - see Focus and Meditate for what patient repetition eventually earns."
+requirements = {}
+effects = []
+trains = {"patience": 5}
+evolves_from = ""

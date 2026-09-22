@@ -45,6 +45,7 @@ extends Control
 @onready var charging_strike_button: Button = $ScrollContainer/VBox/AbilityButtons/ChargingStrikeButton
 @onready var heal_button: Button = $ScrollContainer/VBox/SupportButtons/HealButton
 @onready var revive_button: Button = $ScrollContainer/VBox/SupportButtons/ReviveButton
+@onready var wait_button: Button = $ScrollContainer/VBox/PatienceButtons/WaitButton
 @onready var debug_buttons_container: HBoxContainer = $ScrollContainer/VBox/DebugButtons
 @onready var debug_stat_buttons_container: HBoxContainer = $ScrollContainer/VBox/DebugStatButtons
 
@@ -75,6 +76,7 @@ func _ready() -> void:
 	charging_strike_button.pressed.connect(_on_charging_strike_pressed)
 	heal_button.pressed.connect(_on_heal_pressed)
 	revive_button.pressed.connect(_on_revive_pressed)
+	wait_button.pressed.connect(_on_wait_pressed)
 	ProgressionSystem.skill_leveled_up.connect(_on_skill_leveled_up)
 	TurnScheduler.turn_skipped.connect(_on_turn_skipped)
 
@@ -275,6 +277,21 @@ func _on_revive_pressed() -> void:
 	_resolve_full_turn(event)
 
 
+## The one button that becomes three abilities: resolves whichever tier
+## of the Wait -> Focus -> Meditate chain AbilityRegistry.get_active_tier
+## currently says is earned, rather than always resolving "wait" by
+## name - see that function's doc comment. No target needed (all three
+## tiers currently have empty effects), so target_id/direction stay at
+## resolve_ability()'s defaults.
+func _on_wait_pressed() -> void:
+	if game_over or TurnScheduler.get_active_entity() != player_id:
+		return
+	var skills: SkillsComponent = EntityRegistry.get_component(player_id, "SkillsComponent")
+	var ability_id: String = AbilityRegistry.get_active_tier("wait", skills)
+	var event: GameEvent = ActionResolver.resolve_ability(player_id, ability_id)
+	_resolve_full_turn(event)
+
+
 ## Logs the player's action, then resolves every subsequent turn until
 ## it's the player's turn again (normally just one enemy turn, but see
 ## below) or the round ends (only on player death - see
@@ -399,6 +416,19 @@ func _refresh_display() -> void:
 	# worth a real rule if more target-state-gated abilities show up.
 	heal_button.disabled = game_over or not player_stats.is_alive() or player_stats.current_hp >= player_stats.max_hp
 	revive_button.disabled = game_over or enemy_stats.is_alive()
+
+	# Wait's base tier has no requirements (always available, like
+	# Move/Attack), so the button itself is only ever gated on game_over -
+	# what changes is WHICH tier it resolves to and is labeled as. Text
+	# is re-derived every refresh rather than cached, matching the
+	# "unlock status is derived, never stored" convention (§8) - a
+	# level-up mid-game should be reflected the very next refresh, not
+	# require some separate invalidation step.
+	var player_skills: SkillsComponent = EntityRegistry.get_component(player_id, "SkillsComponent")
+	var active_wait_tier: String = AbilityRegistry.get_active_tier("wait", player_skills)
+	var wait_tier_definition: AbilityDefinition = AbilityRegistry.get_definition(active_wait_tier)
+	wait_button.text = wait_tier_definition.display_name if wait_tier_definition != null else "Wait"
+	wait_button.disabled = game_over
 
 
 ## Player-only for now - the enemy has a SkillsComponent too (consistency,

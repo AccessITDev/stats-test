@@ -31,6 +31,20 @@ extends Resource
 ## effect, deliberately, for authoring speed - revisit if it gets unwieldy.
 @export var effects: Array[Dictionary] = []
 
+## The id of the ability tier this one evolves from, or "" if this isn't
+## part of an evolution chain (or is that chain's own base tier - a base
+## tier leaves this empty; only the tier ABOVE it points back). A tier
+## declares what it supersedes rather than the reverse (evolves_from
+## here, not an "evolves_to" on the earlier tier), so adding a new tier
+## on top later never requires editing the tier before it - same
+## "adding content is purely additive" property this schema already has
+## for ordinary unlock requirements. This is ability EVOLUTION, distinct
+## from the (still undesigned) skill transcendence in TECHNICAL_DESIGN.md
+## §8/DESIGN_PILLARS.md's Open items - a skill leveling up and becoming a
+## different skill is a separate, bigger, not-yet-touched idea. See
+## AbilityRegistry.get_active_tier() for how a chain is walked at runtime.
+@export var evolves_from: String = ""
+
 
 func meets_requirements(skills: SkillsComponent) -> bool:
 	for skill_id: String in requirements:

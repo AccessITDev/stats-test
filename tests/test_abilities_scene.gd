@@ -51,7 +51,7 @@ func _ready() -> void:
 
 	var unlocked: Array[String] = AbilityRegistry.get_unlocked_ids(actor_skills)
 	unlocked.sort()
-	assert(unlocked == ["charging_strike", "dash", "heal", "power_strike", "revive"], "All three skill-gated abilities plus the two always-available ones should be unlocked now, got %s" % str(unlocked))
+	assert(unlocked == ["charging_strike", "dash", "heal", "power_strike", "revive", "wait"], "All three skill-gated abilities plus the three always-available ones should be unlocked now, got %s" % str(unlocked))
 
 	# --- Dash: 2 clear cells, nothing in the way ---
 	var dash_event: GameEvent = ActionResolver.resolve_ability(actor_id, "dash", -1, ActionResolver.Direction.RIGHT)

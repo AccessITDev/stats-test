@@ -28,6 +28,7 @@ func _ready() -> void:
 	var dash_up_button: Button = main_instance.get_node("ScrollContainer/VBox/DashButtons/DashUpButton")
 	var heal_button: Button = main_instance.get_node("ScrollContainer/VBox/SupportButtons/HealButton")
 	var revive_button: Button = main_instance.get_node("ScrollContainer/VBox/SupportButtons/ReviveButton")
+	var wait_button: Button = main_instance.get_node("ScrollContainer/VBox/PatienceButtons/WaitButton")
 	var restart_button: Button = main_instance.get_node("ScrollContainer/VBox/RestartButton")
 
 	assert(stats_label.text != "Loading...", "main_instance's _ready() should have completed by now, but stats_label was never refreshed")
@@ -131,6 +132,43 @@ func _ready() -> void:
 	# like any other action, and the enemy (revived, still adjacent)
 	# counter-attacks for its power (3): 5 + 2 - 3 = 4.
 	assert(player_stats.current_hp == 4, "Heal should net to 4 HP (5 + 2 healed at level 0 - 3 from the enemy's counter-attack), got %d" % player_stats.current_hp)
+
+	# --- Wait/Patience evolution: the button resolves through
+	# AbilityRegistry.get_active_tier(), not a hardcoded ability id. At 0
+	# Patience it's still just "Wait" - trains Patience and costs a real
+	# turn like any other action, so the adjacent, living enemy still
+	# gets its usual counter-attack. ---
+	assert(not wait_button.disabled, "Wait should always be enabled - its base tier has no requirements")
+	assert(wait_button.text == "Wait", "Wait button should show the base tier's name before any Patience is trained")
+	var log_before_wait: String = log_display.get_parsed_text()
+	wait_button.pressed.emit()
+	await get_tree().process_frame
+	assert(player_skills.get_xp("patience") == 5, "Using the base Wait tier should train patience via trains (5 xp), got %d" % player_skills.get_xp("patience"))
+	assert(log_display.get_parsed_text().length() > log_before_wait.length(), "Wait should add to the log like any other action")
+	assert(log_display.get_parsed_text().contains("Wait"), "Log should narrate Wait by name: %s" % log_display.get_parsed_text())
+	assert(player_stats.current_hp == 1, "Waiting still costs a turn - the adjacent, living enemy should land its usual counter-attack (4 - 3 = 1), got %d" % player_stats.current_hp)
+
+	# --- Crossing Patience level 3 should silently swap the same button
+	# over to Focus - no separate unlock UI, no re-wiring needed. ---
+	player_stats.current_hp = player_stats.max_hp  # heal out of harm's way before spending more turns
+	player_skills.xp["patience"] = 300  # level 3
+	main_instance._refresh_display()
+	assert(wait_button.text == "Focus", "Wait button should relabel to Focus once Patience reaches level 3, got '%s'" % wait_button.text)
+
+	wait_button.pressed.emit()
+	await get_tree().process_frame
+	assert(player_skills.get_xp("patience") == 308, "Focus should train patience via its own trains entry (300 + 8), got %d" % player_skills.get_xp("patience"))
+	assert(log_display.get_parsed_text().contains("Focus"), "Log should narrate Focus by name once the tier has evolved, not still say Wait: %s" % log_display.get_parsed_text())
+
+	# --- Crossing Patience level 7 promotes to Meditate, the chain's deepest tier. ---
+	player_skills.xp["patience"] = 700  # level 7
+	main_instance._refresh_display()
+	assert(wait_button.text == "Meditate", "Wait button should relabel to Meditate once Patience reaches level 7, got '%s'" % wait_button.text)
+
+	wait_button.pressed.emit()
+	await get_tree().process_frame
+	assert(player_skills.get_xp("patience") == 712, "Meditate should train patience via its own trains entry (700 + 12), got %d" % player_skills.get_xp("patience"))
+	assert(log_display.get_parsed_text().contains("Meditate"), "Log should narrate Meditate by name at the deepest tier: %s" % log_display.get_parsed_text())
 
 	# --- Real player death: this IS a full round-ending event ---
 	player_stats.current_hp = 0

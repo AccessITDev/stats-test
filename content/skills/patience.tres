@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SkillDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/skills/skill_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "patience"
+display_name = "Patience"
+description = "The discipline of choosing not to act. Trained by waiting - deliberately or otherwise. See Wait, Focus, and Meditate."
+xp_per_level = 100
+max_level = 10
